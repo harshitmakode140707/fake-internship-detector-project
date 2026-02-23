@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Fake Internship & Cyber Safety Assistant</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    background:white;
+    width:600px;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+}
+
+textarea,input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    background:#203a43;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.result{
+    background:#f1f1f1;
+    padding:10px;
+    margin-top:10px;
+    border-radius:8px;
+}
+
+.chatbox{
+    height:160px;
+    overflow-y:auto;
+    background:#f7f7f7;
+    padding:10px;
+    border-radius:8px;
+}
+
+.user{font-weight:bold;color:black;}
+.bot{color:#203a43;margin-bottom:6px;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>🔐 Smart Fake Internship Analyzer</h2>
+
+<form method="POST">
+<textarea name="description" placeholder="Paste internship description here..."></textarea>
+<button type="submit">Analyze Internship</button>
+</form>
+
+{% if risk %}
+<div class="result">
+<b>{{ risk }}</b><br>
+Trust Score: {{ trust_score }}/100
+<ul>
+{% for r in reasons %}
+<li>{{ r }}</li>
+{% endfor %}
+</ul>
+<b>Suggestions:</b>
+<ul>
+{% for s in suggestions %}
+<li>{{ s }}</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+
+<hr>
+
+<h3>🤖 Cyber Safety Chatbot</h3>
+
+<div class="chatbox" id="chatbox">
+<div class="bot">Hello! Ask me about fake internships & cyber safety.</div>
+</div>
+
+<input type="text" id="msg" placeholder="Is paying registration fee safe?">
+<button onclick="send()">Send</button>
+</div>
+
+<script>
+function send(){
+    let msg=document.getElementById("msg").value;
+    if(msg==="") return;
+
+    let box=document.getElementById("chatbox");
+    box.innerHTML+=`<div class="user">You: ${msg}</div>`;
+
+    fetch("/chatbot",{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"message="+encodeURIComponent(msg)
+    })
+    .then(res=>res.text())
+    .then(reply=>{
+        box.innerHTML+=`<div class="bot">Bot: ${reply}</div>`;
+        box.scrollTop=box.scrollHeight;
+    });
+
+    document.getElementById("msg").value="";
+}
+</script>
+
+</body>
+</html>
